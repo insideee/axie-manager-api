@@ -27,6 +27,23 @@ class AccountCreate(BaseModel):
     player_name: str
     scholar_earns_percent: str
     
+class AccountCreatedOut(BaseModel):
+    ronin_address: str
+    player_name: str
+    
+    class Config:
+        orm_mode = True
+        
 class AccountOut(BaseModel):
     ronin_address: str
     player_name: str
+    slp_total:int
+    slp_yesterday: int
+    slp_today: int
+    winrate: int
+    average: int
+    elo: int
+    scholar_earns_percent: int
+    
+    class Config:
+        orm_mode = True

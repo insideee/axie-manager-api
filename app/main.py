@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import FastAPI, APIRouter
 from fastapi.param_functions import Depends
 import psycopg2 as psysql
@@ -7,7 +8,7 @@ import time
 
 from .database import engine
 from .config import settings
-from . import models
+from . import models, api
 from .routers import user, auth, account
 
 models.Base.metadata.create_all(bind=engine)
@@ -16,6 +17,7 @@ app = FastAPI()
 app.include_router(user.router)
 app.include_router(account.router)
 app.include_router(auth.router)
+
 
 while True:
     try: 
@@ -27,6 +29,7 @@ while True:
     except Exception as error:
         print(f'Unable to connect.\n {error}')
         time.sleep(3)
+
 
 @app.get('/')
 def home():
