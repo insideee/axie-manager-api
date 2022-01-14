@@ -36,9 +36,9 @@ class Axie(Base):
     
     id = Column(Integer, primary_key=True, nullable=False)
     market_id = Column(String, nullable=False)
-    name = Column(String, unique=True, nullable=False)
+    name = Column(String, nullable=False)
     stage = Column(Integer, nullable=False)
-    class_ = Column(String, nullable=False)
+    class_ = Column(String)
     breedCount = Column(Integer, nullable=False)
     image = Column(String, nullable=False)
     banned = Column(Boolean, nullable=False)

@@ -6,12 +6,15 @@ from .. import utils, api
 from ..database import get_db
 import time
 
-router = APIRouter(prefix='/accounts',
-                   tags=['Accounts'])
+router = APIRouter(prefix='/account',
+                   tags=['Account'])
 
-@router.post('/dev_create', status_code=status.HTTP_201_CREATED, response_model=schemas.AccountCreatedOut)
+@router.post('/', status_code=status.HTTP_201_CREATED, response_model=schemas.AccountCreatedOut)
 async def create_account(account: schemas.AccountCreate, db: Session = Depends(database.get_db),
                    user: int = Depends(oauth2.get_current_user)):
+    
+    if account.ronin_address.find('ronin:') >= 0:
+        account.ronin_address = account.ronin_address[6:]
     
     #check unique ronin account
     query = db.query(models.Account).filter(models.Account.ronin_address == account.ronin_address).first()
@@ -22,7 +25,10 @@ async def create_account(account: schemas.AccountCreate, db: Session = Depends(d
     data = await api.get_data(account.ronin_address, exception=exception)
     
     #check valid account
-    if data[0]['leaderboard']['name'] == None:
+    try:
+        if data[0]['leaderboard']['name'] == None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Invalid ronin address')
+    except KeyError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Invalid ronin address')
 
     new_account = models.Account(ronin_address=account.ronin_address, player_name=account.player_name, slp_total=data[0]['slp']['total'],
